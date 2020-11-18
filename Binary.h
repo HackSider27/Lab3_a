@@ -11,27 +11,27 @@ namespace Prog3a {
 	class Binary {
 	private:
 		static const int SZ = 15;
-		char* arr;
+		char arr[SZ];
 		void NormolizeArr();
 		void SetDefaultArr();
 	public:
 		Binary();
 		Binary(const long& num);
 		Binary(const char* _arr);
-		Binary(const Binary& other);
-		Binary(Binary&& other);
+		//Binary(const Binary& other);
+		//Binary(Binary&& other);
 
 		bool IsCorrectArr(const char* _digits);
-		~Binary() { delete[]arr; }
+		//~Binary() { delete[]arr; }
 		string GetBin() const { return string(arr); }
 		string GetAdditionalCode() const;
-		Binary Add(const Binary& arg) const;
+		Binary& Add(const Binary& arg);
 		void SetBinaryWithAdditionalCode(const char* _arr);
 
-		Binary& operator=(const Binary& other);
-		Binary& operator=(Binary&& other);
+		//Binary& operator=(const Binary& other);
+		//Binary& operator=(Binary&& other);
 
-		Binary& incr(); //������� ��� ���������� ++a
+		Binary& incr(); //у префиксного не должно быть int ++a
 		Binary& dicr();
 		//char* sum(Binary&, Binary&);
 		int Sign()const;

@@ -25,10 +25,10 @@ void input(Binary& b, bool first = true)
 		}
 		else if (n == 2)
 		{
-			char arr[15]{};
-			std::cin >> arr;
+			char _arr[15]{};
+			std::cin >> _arr;
 
-			b = Binary(arr);
+			b = Binary(_arr);
 		}
 	}
 }
@@ -40,10 +40,12 @@ void menu(Binary& b1, const Binary& b2, bool first = true)
 		std::cout << "1. Increment of " << ord << " number: ";
 		Binary::print(std::cout, b1.incr());
 		std::cout << std::endl;
+		b1.dicr();
 
 		std::cout << "2. Dicrement of " << ord << " number: ";
 		Binary::print(std::cout, b1.dicr());
 		std::cout << std::endl;
+		b1.incr();
 	}
 	catch (std::overflow_error& ex) {
 		std::cout << ex.what() << std::endl;

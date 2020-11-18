@@ -10,49 +10,49 @@ void invert(char& c)
 }
 
 namespace Prog3a {
-	std::ostream& Binary::print(std::ostream& s, const Binary& bi) {
-		if (bi.arr[0] == '\0')
+	std::ostream& Binary::print(std::ostream& s, const Binary& b) {
+		if (b.arr[0] == '\0')
 			s << "Binary number not found..." << std::endl;
 		else
-			s << bi.GetBin();
+			s << b.GetBin();
 		return s;
 	}
 
-	std::istream& Binary::scan(std::istream& s, Binary& bi) {
-		s.read(bi.arr, 15);
+	std::istream& Binary::scan(std::istream& s, Binary& b) {
+		s.read(b.arr, 15);
 		return s;
 	}
 
 	void Binary::NormolizeArr()
 	{
 
-			int j = 1;
-			while (arr[j] == '0')
-			{
-				j++;
-			}
-			if (arr[j] == '\0')
-			{
-				j--;
-				arr[0] = '0';
-			}
-			int i = 1;
+		int j = 1;
+		while (arr[j] == '0')
+		{
+			j++;
+		}
+		if (arr[j] == '\0')
+		{
 			j--;
-			for (; arr[i + j] != '\0'; i++)
-			{
-				arr[i] = arr[i + j];
-			}
-			arr[i] = '\0';
+			arr[0] = '0';
+		}
+		int i = 1;
+		j--;
+		for (; arr[i + j] != '\0'; i++)
+		{
+			arr[i] = arr[i + j];
+		}
+		arr[i] = '\0';
 	}
 
 	void Binary::SetDefaultArr() {
-		arr = new char[SZ]{};
-		for (int i = 0; i < SZ - 1; i++) {
+		//arr = new char[SZ] {};
+		for (int i = 0; i < SZ - 2; i++) {
 			arr[i] = '0';
 		}
 	}
 
-	Binary::Binary(){
+	Binary::Binary() {
 		SetDefaultArr();
 	}
 
@@ -60,11 +60,12 @@ namespace Prog3a {
 	{
 		SetDefaultArr();
 
-		char tmp[SZ - 1]{};
-		auto [ptr, _] = std::to_chars(tmp, tmp + SZ, std::abs(num), 2);
-		
+		char tmp[SZ]{};
+		auto [ptr, _] = std::to_chars(tmp, tmp + SZ - 1, std::abs(num), 2);
+
 		const auto size = ptr - tmp;
 		std::copy_n(tmp, size, arr + SZ - 1 - size);
+
 
 		if (num < 0)
 			arr[0] = '1';
@@ -87,6 +88,9 @@ namespace Prog3a {
 
 			const auto len = std::strlen(_arr);
 			std::copy_n(_arr, len, arr + SZ - 1 - len);
+			/*for (int i = SZ-len; i < 14; i++) {
+				arr[i] = _arr[i];
+			}*/
 			arr[0] = sgn ? '0' : '1';
 		}
 		else
@@ -95,20 +99,20 @@ namespace Prog3a {
 		}
 	}
 
-	Binary::Binary(const Binary& other)
+	/*Binary::Binary(const Binary& other)
 	{
 		SetDefaultArr();
 
 		std::copy(arr, arr + SZ, other.arr);
 	}
 
-	Binary::Binary(Binary&& other) :
+	/*Binary::Binary(Binary&& other) :
 		arr(std::move(other.arr))
 	{
 		other.arr = nullptr;
-	}
+	}*/
 
-	bool Binary::IsCorrectArr(const char* _digits){
+	bool Binary::IsCorrectArr(const char* _digits) {
 		int i = 0;
 		if (_digits[0] == '-' || _digits[0] == '+')
 		{
@@ -133,17 +137,17 @@ namespace Prog3a {
 		return	s.str();
 	}
 
-	Binary Binary::Add(const Binary& arg)const
+	Binary& Binary::Add(const Binary& arg)
 	{
 		auto a = GetAdditionalCode();
 		auto b = arg.GetAdditionalCode();
 
-		if (a.size() < b.size())
-			std::swap(a, b);
+		//if (a.size() < b.size())
+			//std::swap(a, b);
 
-		std::string res(a.length(), '0');
+		std::string res(14, '0');
 		bool carry = false;
-		for (int i = a.length() - 1; i >= 0; --i)
+		for (int i = 13; i >= 0; --i)
 		{
 			res[i] = (a[i] - '0' + b[i] - '0' + (carry ? 1 : 0)) % 2 + '0';
 
@@ -156,13 +160,20 @@ namespace Prog3a {
 				throw std::overflow_error("Overflow in addition");
 		}
 
-		if (res[0] == '0')
-			return res.c_str();
+		Binary rezult;
 
+		if (res[0] == '0') {
+			for (int i = 0; i < 14; i++) {
+				rezult.arr[i] = res[i];
+			}
+			rezult.arr[14] = '\0';
+			*this = rezult;
+			return *this;
+		}
 		Binary converted;
-		converted.SetBinaryWithAdditionalCode(res.c_str());
+		(*this).SetBinaryWithAdditionalCode(res.c_str());
 
-		return converted;
+		return *this;
 	}
 
 	void Binary::SetBinaryWithAdditionalCode(const char* _arr)
@@ -170,7 +181,7 @@ namespace Prog3a {
 		std::string str(_arr);
 
 		bool carry = true;
-		for (int i = str.length() - 1; carry; --i)
+		for (int i = 14; carry; i--)
 		{
 			if (!carry)
 				break;
@@ -193,14 +204,14 @@ namespace Prog3a {
 		std::copy(std::begin(str), std::end(str), arr);
 	}
 
-	Binary& Binary::operator=(const Binary& other){
+	/*Binary& Binary::operator=(const Binary& other) {
 		if (this != &other)
 			std::copy(arr, arr + SZ, other.arr);
 
 		return *this;
 	}
 
-	Binary& Binary::operator=(Binary&& other){
+	Binary& Binary::operator=(Binary&& other) {
 		if (this != &other)
 		{
 			delete[] arr;
@@ -210,14 +221,39 @@ namespace Prog3a {
 		}
 
 		return *this;
+	}*/
+
+	Binary& Binary::dicr() {
+		Binary c;
+		Binary b = *this;
+
+		c.arr[0] = '1';
+		for (int i = 1; i < SZ - 1; i++) {
+			arr[i] = '0';
+		}
+		c.arr[13] = '1';
+		c.arr[14] = '\0';
+
+		b = b.Add(c);
+		*this = b;
+		//*this = *this + Binary(-1);
+		(*this).arr[14] = '\0';
+		return *this;
 	}
 
 	Binary& Binary::incr() {
-		return *this = Add(1);
-	}
+		Binary c;
+		//Binary b = *this;
+		for (int i = 0; i < SZ - 1; i++) {
+			c.arr[i] = '0';
+		}
+		c.arr[13] = '1';
+		c.arr[14] = '\0';
 
-	Binary& Binary::dicr() {
-		return *this = Add(-1);
+		*this = (*this).Add(c);
+		//*this = *this + Binary(1);
+		(*this).arr[14] = '\0';
+		return *this;
 	}
 
 	int Binary::Sign() const {
@@ -232,7 +268,7 @@ namespace Prog3a {
 		std::for_each(std::begin(str) + 1, std::end(str), &invert);
 
 		bool carry = true;
-		for (int i = SZ - 1; carry; --i)
+		for (int i = SZ - 2; carry; --i)
 		{
 			if (!carry)
 				break;
